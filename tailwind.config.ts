@@ -1,13 +1,11 @@
 import { type Config } from "tailwindcss";
-import { fontFamily } from "tailwindcss/defaultTheme";
 
 export default {
   content: ["./src/**/*.tsx"],
   theme: {
-    extend: {
-      fontFamily: {
-        sans: ["var(--font-sans)", ...fontFamily.sans],
-      },
+    colors: {
+      primary: "#6a6ad6",
+      white: "#eee",
     },
   },
   plugins: [],

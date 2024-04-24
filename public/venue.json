@@ -1,0 +1,21 @@
+{
+    "@context": "http://schema.org",
+    "@type": "LocalBusiness",
+    "name": "Urquiza - Tango Argentino",
+    "description": "Urquiza - Tango Argentino freut sich auf dich!",
+    "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Berlin, Germany",
+        "addressCountry": "Germany",
+        "postalCode": "10119",
+        "streetAddress": "Schönhauser Allee 175"
+    },
+    "telephone": "+49 171 8103557",
+    "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": "52.5317112",
+        "longitude": "13.4120256"
+    },
+    "priceRange": "-",
+    "image": "https://storage.googleapis.com/download/storage/v1/b/usc-pro-uscweb-live-media/o/de-live%2Foriginal_1413x795_Flyer%202021-2022_1641298795826325_admin.jpeg?generation=1641298795944930&amp;alt=media"
+}

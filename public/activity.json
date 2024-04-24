@@ -1,0 +1,28 @@
+{
+    "event": "page_viewed",
+    "user": {
+      "id": null,
+      "login_status": "logged-out",
+      "membership_city": null,
+      "membership_country": null,
+      "membership_status": null,
+      "membership_plan": null,
+      "membership_b2b_type": null,
+      "membership_contract_duration": null,
+      "company_name": null
+    },
+    "class": {
+      "id": "69496067",
+      "name": "Ballett Anfänger mit Vorkenntnissen",
+      "category": "Dancing",
+      "type": "instant booking",
+      "spots_left": "12",
+      "search_position": 17
+    },
+    "type": "class details",
+    "language": "en",
+    "city": "Berlin",
+    "country": "Germany",
+    "environment": "de-live",
+    "referrer": ""
+  }
