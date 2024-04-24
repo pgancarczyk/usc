@@ -12,7 +12,7 @@ const ACTIVITIES_FILTERS =
   "city_id=1&business_type%5B%5D=b2c&plan_type=2&type%5B%5D=onsite&category[]=40005&page=99&previous-pages";
 
 const fetchActivities = async (date: Date) => {
-  // return [];
+  return [];
 
   date.setDate(date.getDate() + 0);
 

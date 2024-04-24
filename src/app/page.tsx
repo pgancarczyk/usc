@@ -37,7 +37,7 @@ export default async function HomePage() {
   return (
     <>
       <header className="bg-primary w-full p-4 text-white">
-        <nav className="grid grid-cols-3 pb-2 text-center">
+        <nav className="grid gap-3 text-center sm:grid-cols-2 md:grid-cols-3">
           <div className="flex justify-center gap-2 text-xl">
             <div className="w-12 cursor-pointer rounded-xl bg-white p-1">
               🩰
@@ -66,7 +66,7 @@ export default async function HomePage() {
               ✨
             </div>
           </div>
-          <div>
+          <div className="sm:col-span-2 md:col-span-1">
             <input
               className="bg-primary w-full border-b-2 p-1 outline-none"
               list="usc"
@@ -80,7 +80,9 @@ export default async function HomePage() {
           </div>
         </nav>
       </header>
-      <main className={`grid grid-cols-3 gap-4 p-4`}>
+      <main
+        className={`grid grid-cols-1 gap-4 p-4 sm:grid-cols-2 md:grid-cols-3`}
+      >
         {days.map((day) => (
           <section key={day.date.toISOString()}>
             <h2 className="pb-2">{day.date.toLocaleDateString()}</h2>
