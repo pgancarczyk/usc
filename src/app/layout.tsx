@@ -13,7 +13,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="grid h-screen w-screen grid-rows-[auto,1fr] bg-white font-sans text-lg">
+      <body className="grid h-screen w-screen grid-rows-[auto,1fr] overflow-hidden overscroll-none bg-white font-sans text-lg">
         {children}
       </body>
     </html>

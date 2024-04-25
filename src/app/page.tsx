@@ -2,8 +2,9 @@ import { db } from "~/server/db";
 import { between } from "drizzle-orm";
 import { activities } from "~/server/db/schema";
 import { Icon } from "~/components/icon";
+import { Calendar } from "~/components/calendar";
 
-const DAYS_AHEAD = 5;
+const DAYS_AHEAD = 6;
 
 export default async function HomePage() {
   const lastMidnight = new Date();
@@ -23,26 +24,16 @@ export default async function HomePage() {
     ),
   ];
 
-  const days = [...Array(DAYS_AHEAD).keys()].map((key) => {
-    const midnight = new Date(lastMidnight);
-    const nextMidnight = new Date(lastMidnight);
-    midnight.setDate(nextMidnight.getDate() + key);
-    nextMidnight.setDate(nextMidnight.getDate() + key + 1);
-
-    const index = data.findIndex((activity) => activity.start > nextMidnight);
-    const activities = index === -1 ? data : data.splice(0, index);
-    return { date: midnight, activities };
-  });
-
   return (
     <>
-      <header className="bg-primary p-4 text-white">
+      <header className="w-screen bg-primary p-4 text-white">
         <nav className="grid gap-3 text-center sm:grid-cols-2 md:grid-cols-3">
           <div className="flex justify-center gap-2 text-xl">
             <Icon>🩰</Icon>
             <Icon enabled>🤸</Icon>
             <Icon tooltip="this is enabled">💃</Icon>
             <Icon>🕺</Icon>
+            <Icon>🎭</Icon>
           </div>
           <div className="flex justify-center gap-2 text-xl">
             <Icon>🌞</Icon>
@@ -52,7 +43,7 @@ export default async function HomePage() {
           </div>
           <div className="sm:col-span-2 md:col-span-1">
             <input
-              className="bg-primary w-full border-b-2 p-1 placeholder-white placeholder-opacity-60 opacity-60 outline-none focus:opacity-100"
+              className="w-full border-b-2 bg-primary p-1 placeholder-white placeholder-opacity-60 opacity-60 outline-none focus:opacity-100"
               list="usc"
               placeholder="start typing class or venue name..."
             />
@@ -64,30 +55,8 @@ export default async function HomePage() {
           </div>
         </nav>
       </header>
-      <main className="flex overflow-auto">
-        {days.map((day) => (
-          <section
-            className="w-full p-4 sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/5"
-            key={day.date.toISOString()}
-          >
-            <h2 className="pb-2">{day.date.toLocaleDateString()}</h2>
-            <ul>
-              {day.activities.map((activity) => (
-                <li
-                  className="overflow-hidden text-ellipsis whitespace-nowrap"
-                  key={activity.id}
-                >
-                  {activity.start.toLocaleDateString()},
-                  {activity.start.toLocaleTimeString([], {
-                    hour: "numeric",
-                    minute: "2-digit",
-                  })}
-                  , {activity.name}
-                </li>
-              ))}
-            </ul>
-          </section>
-        ))}
+      <main>
+        <Calendar activities={data} />
       </main>
     </>
   );

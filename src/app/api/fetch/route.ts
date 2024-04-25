@@ -1,6 +1,6 @@
 import { env } from "~/env";
 import { parse } from "node-html-parser";
-import { InsertActivity, activities } from "~/server/db/schema";
+import { type ActivityInsert, activities } from "~/server/db/schema";
 import { db } from "~/server/db";
 import { sql } from "drizzle-orm";
 
@@ -29,7 +29,7 @@ const fetchActivities = async (date: Date) => {
   const root = parse(data);
   const activityNodes = root.querySelectorAll(".smm-class-snippet");
 
-  const activities: InsertActivity[] = activityNodes.flatMap((node) => {
+  const activities: ActivityInsert[] = activityNodes.flatMap((node) => {
     try {
       const id = Number(node.getAttribute("data-appointment-id"));
 
@@ -75,7 +75,7 @@ const fetchActivities = async (date: Date) => {
 };
 
 export async function GET(request: Request) {
-  const data: InsertActivity[] = await fetchActivities(new Date());
+  const data: ActivityInsert[] = await fetchActivities(new Date());
 
   const result = data.length
     ? await db

@@ -18,7 +18,7 @@ export const createTable = pgTableCreator((name) => `usc_${name}`);
 export const venues = createTable(
   "venue",
   {
-    id: varchar('slug', { length: 256 }).primaryKey(),
+    id: varchar("slug", { length: 256 }).primaryKey(),
     name: varchar("name", { length: 256 }),
     telephone: varchar("telephone", { length: 256 }),
     postalCode: varchar("postal_code", { length: 256 }),
@@ -31,23 +31,20 @@ export const venues = createTable(
   },
   (i) => ({
     nameIndex: index("venue_name_index").on(i.name),
-  })
+  }),
 );
 
 export const venuesRelations = relations(venues, ({ many }) => ({
-  activities: many(activities)
+  activities: many(activities),
 }));
 
-export const categories = createTable(
-  "category",
-  {
-    id: integer("id").primaryKey(),
-    name: varchar("name", { length: 256 }),
-  }
-);
+export const categories = createTable("category", {
+  id: integer("id").primaryKey(),
+  name: varchar("name", { length: 256 }),
+});
 
 export const categoriesRelations = relations(categories, ({ many }) => ({
-  activities: many(activities)
+  activities: many(activities),
 }));
 
 export const activities = createTable(
@@ -67,18 +64,19 @@ export const activities = createTable(
     nameIndex: index("activity_name_index").on(i.name),
     venueIndex: index("activity_venue_index").on(i.venueId),
     categoryIndex: index("activity_category_index").on(i.categoryId),
-  })
+  }),
 );
 
 export const activitiesRelations = relations(activities, ({ one }) => ({
   venues: one(venues, {
     fields: [activities.venueId],
-    references: [venues.id]
+    references: [venues.id],
   }),
   categories: one(categories, {
     fields: [activities.categoryId],
-    references: [categories.id]
-  })
+    references: [categories.id],
+  }),
 }));
 
-export type InsertActivity = typeof activities.$inferInsert;
+export type ActivityInsert = typeof activities.$inferInsert;
+export type ActivitySelect = typeof activities.$inferSelect;
