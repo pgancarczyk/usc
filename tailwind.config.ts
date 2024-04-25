@@ -4,7 +4,7 @@ export default {
   content: ["./src/**/*.tsx"],
   theme: {
     colors: {
-      primary: "#6a6ad6",
+      primary: "hsl(240, 57%, 63%)",
       "primary-light": "hsl(240 57% 94% / 1)",
       white: "#eee",
     },

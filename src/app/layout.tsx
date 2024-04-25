@@ -1,7 +1,7 @@
 import "~/styles/globals.css";
 
 export const metadata = {
-  title: "USC 💃💃",
+  title: "USC dance planner 🤸✨",
   description:
     "Urban Sports Club alternative interface for dance classes in Berlin",
 };
