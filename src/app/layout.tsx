@@ -13,7 +13,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="font-sans text-lg">{children}</body>
+      <body className="grid h-screen w-screen grid-rows-[auto,1fr] bg-white font-sans text-lg">
+        {children}
+      </body>
     </html>
   );
 }
