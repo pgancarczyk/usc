@@ -7,6 +7,8 @@ export const Cell = ({ activities }: { activities: ActivitySelect[] }) => {
         const nameCell = (
           <div className="overflow-hidden text-ellipsis p-2" key={activity.id}>
             {activity.name}
+            <br />
+            <span className="text-sm">{activity.venueId}</span>
           </div>
         );
         if (index) return nameCell;

@@ -5,14 +5,15 @@ import {
   useReactTable,
   getCoreRowModel,
 } from "@tanstack/react-table";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Icon } from "~/components/icon";
 import { Table } from "~/components/table";
 import type { TData } from "~/types";
 import { Cell } from "./cell";
 import { type ActivitySelect } from "~/server/db/schema";
+import { Search } from "./search";
 
-const FILTER_PATTERNS = {
+const CATEGORY_PATTERNS = {
   ballet: ["ballet", "barre", "pointe", "spitz"],
   acro: ["acro", "floorwork", "capoeira"],
   social: [
@@ -34,6 +35,7 @@ const FILTER_PATTERNS = {
     "floorwork",
     "ecstatic",
     "impro",
+    "zeitgenössisch",
   ],
   jazz: ["jazz"],
   pole: ["pole", "aerial", "hoop", "silk", "spinning"],
@@ -69,6 +71,22 @@ const FILTER_PATTERNS = {
   unknown: [],
 };
 
+const LEVEL_PATTERNS = {
+  beginner: [
+    "anfänger",
+    "anfanger",
+    "beginner",
+    "basic",
+    "(be/i)",
+    "int-adv",
+    "level 1",
+    "einsteigend",
+  ],
+  intermediate: ["mittelst", "(be/i)", "int-adv", "intermediate"],
+  advanced: ["fortg", "profi", "professional", "advanced"],
+  open: [],
+};
+
 export const Calendar = ({
   rows,
   columnKeys,
@@ -76,19 +94,19 @@ export const Calendar = ({
   rows: TData[];
   columnKeys: string[];
 }) => {
-  const [filters, setFilters] = useState<
-    Record<keyof typeof FILTER_PATTERNS, boolean>
-  >({
-    ballet: false,
-    acro: false,
-    social: false,
-    contemporary: false,
-    jazz: false,
-    pole: false,
-    workout: false,
-    street: false,
-    unknown: true,
-  });
+  const [filters, setFilters] = useState(
+    Object.fromEntries(
+      Object.keys({ ...CATEGORY_PATTERNS, ...LEVEL_PATTERNS }).map((key) => [
+        key,
+        true,
+      ]),
+    ) as Record<
+      keyof typeof CATEGORY_PATTERNS | keyof typeof LEVEL_PATTERNS,
+      boolean
+    >,
+  );
+
+  const [search, setSearch] = useState("");
 
   const columns = useMemo(
     () =>
@@ -98,29 +116,50 @@ export const Calendar = ({
           cell: (props) =>
             props.row.original[props.column.id] && (
               <Cell
+                key={key}
                 activities={props.row.original[props.column.id]!.filter(
                   (activity: ActivitySelect): boolean => {
-                    const passing = Object.keys(filters).filter((key) => {
-                      const list =
-                        FILTER_PATTERNS[key as keyof typeof FILTER_PATTERNS];
-                      return list.some((word) =>
-                        activity.name?.toLowerCase().includes(word),
-                      );
-                    });
-                    if (!passing.length) return filters.unknown;
-                    return (
-                      passing.filter(
-                        (passed) =>
-                          filters[passed as keyof typeof FILTER_PATTERNS],
-                      ).length > 0
-                    );
+                    const passingCategories = Object.entries(CATEGORY_PATTERNS)
+                      .filter(([_key, list]) => {
+                        return list.some((word) =>
+                          activity.name?.toLowerCase().includes(word),
+                        );
+                      })
+                      .map(([key, _list]) => key);
+                    const categoriesOk = passingCategories.length
+                      ? passingCategories.filter(
+                          (passed) =>
+                            filters[passed as keyof typeof CATEGORY_PATTERNS],
+                        ).length > 0
+                      : filters.unknown;
+                    const passingLevels = Object.entries(LEVEL_PATTERNS)
+                      .filter(([_key, list]) => {
+                        return list.some((word) =>
+                          activity.name?.toLowerCase().includes(word),
+                        );
+                      })
+                      .map(([key, _list]) => key);
+                    const levelsOk = passingLevels.length
+                      ? passingLevels.filter(
+                          (passed) =>
+                            filters[passed as keyof typeof LEVEL_PATTERNS],
+                        ).length > 0
+                      : filters.open;
+                    const searchOk = search
+                      ? activity.name
+                          ?.toLowerCase()
+                          .includes(search.toLowerCase())
+                        ? true
+                        : activity.venueId.includes(search.toLowerCase())
+                      : true;
+                    return categoriesOk && levelsOk && searchOk;
                   },
                 )}
               />
             ),
         }),
       ),
-    [columnKeys, filters],
+    [columnKeys, filters, search],
   );
 
   const table = useReactTable({
@@ -129,15 +168,17 @@ export const Calendar = ({
     getCoreRowModel: getCoreRowModel(),
   });
 
-  const toggleFilter = (value: keyof typeof FILTER_PATTERNS) => {
+  const toggleFilter = (
+    value: keyof typeof CATEGORY_PATTERNS | keyof typeof LEVEL_PATTERNS,
+  ) => {
     setFilters({ ...filters, [value]: !filters[value] });
   };
 
   return (
     <>
       <header className="w-screen bg-primary p-4 text-white">
-        <nav className="grid gap-3 text-center sm:grid-cols-2 md:grid-cols-3">
-          <div className="flex justify-center gap-2 text-xl">
+        <nav className="grid grid-cols-12 gap-3 text-center">
+          <div className="col-span-12 flex flex-wrap justify-center gap-2 text-xl sm:flex-nowrap lg:col-span-5">
             <Icon
               enabled={filters.ballet}
               onClick={() => toggleFilter("ballet")}
@@ -176,7 +217,7 @@ export const Calendar = ({
             <Icon
               enabled={filters.street}
               onClick={() => toggleFilter("street")}
-              tooltip="hip hop and street dance"
+              tooltip="street dance"
             >
               👟
             </Icon>
@@ -190,7 +231,7 @@ export const Calendar = ({
             <Icon
               enabled={filters.workout}
               onClick={() => toggleFilter("workout")}
-              tooltip="fitness focused and stretching"
+              tooltip="fitness and stretching"
             >
               💪
             </Icon>
@@ -202,22 +243,47 @@ export const Calendar = ({
               🔮
             </Icon>
           </div>
-          <div className="flex justify-center gap-2 text-xl">
-            <Icon tooltip="beginner">🌞</Icon>
-            <Icon tooltip="intermediate">🌟</Icon>
-            <Icon enabled tooltip="advanced">
+          <div className="col-span-10 flex flex-wrap justify-center gap-2 text-xl sm:col-span-5 sm:flex-nowrap lg:col-span-3">
+            <Icon
+              enabled={filters.beginner}
+              onClick={() => toggleFilter("beginner")}
+              tooltip="beginner"
+            >
+              🌞
+            </Icon>
+            <Icon
+              enabled={filters.intermediate}
+              onClick={() => toggleFilter("intermediate")}
+              tooltip="intermediate"
+            >
+              🌟
+            </Icon>
+            <Icon
+              enabled={filters.advanced}
+              onClick={() => toggleFilter("advanced")}
+              tooltip="advanced"
+            >
               🔥
             </Icon>
-            <Icon enabled tooltip="open level">
+            <Icon
+              enabled={filters.open}
+              onClick={() => toggleFilter("open")}
+              tooltip="open level"
+            >
               ✨
             </Icon>
           </div>
-          <div className="sm:col-span-2 md:col-span-1">
-            <input
-              className="w-full border-b-2 bg-primary p-1 placeholder-white placeholder-opacity-60 opacity-60 outline-none focus:opacity-100"
-              list="usc"
-              placeholder="start typing class or venue name..."
-            />
+          <div className="col-span-2 gap-2 text-xl lg:col-span-1">
+            <Icon
+              enabled={false}
+              // onClick={() => toggleFilter("unknown")}
+              tooltip="classes with no spots left"
+            >
+              🙅
+            </Icon>
+          </div>
+          <div className="col-span-12 sm:col-span-5 lg:col-span-3">
+            <Search onChange={(value) => setSearch(value)} />
           </div>
         </nav>
       </header>
